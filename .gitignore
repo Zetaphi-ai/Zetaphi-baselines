@@ -1,0 +1,18 @@
+# data & weights
+data_cifar100/
+cifar-100-python/
+*.pt
+*.pth
+*.ckpt
+*.tar.gz
+baseline_results/
+
+# python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# os
+.DS_Store

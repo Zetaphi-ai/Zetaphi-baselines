@@ -1,0 +1,27 @@
+{
+  "benchmark": "CIFAR-100",
+  "protocol": {
+    "epochs": 100,
+    "seeds": [1, 2, 3],
+    "optimizer": "AdamW",
+    "weight_decay": 0.01,
+    "batch_size": 128,
+    "lr_schedule": "none",
+    "augmentation": "RandomCrop(32, pad=4) + RandomHorizontalFlip",
+    "metric": "best top-1 eval accuracy over training, mean +/- std over 3 seeds",
+    "param_budget": "matched ~0.45M across compared models",
+    "hardware": "single NVIDIA RTX 4090"
+  },
+  "results": [
+    {"model": "Transformer (multi-head self-attention)", "code_public": true,  "params": 700773, "best_eval_acc_mean": 0.5623, "best_eval_acc_std": 0.0083, "complexity": "O(N^2)"},
+    {"model": "ConvMixer (k=5, tuned lr=1e-3)",           "code_public": true,  "params": 455781, "best_eval_acc_mean": 0.5657, "best_eval_acc_std": 0.0038, "complexity": "O(N)"},
+    {"model": "ZetaPhi mixer (ours)",                      "code_public": false, "params": 447845, "best_eval_acc_mean": 0.6039, "best_eval_acc_std": 0.0033, "complexity": "O(N)"}
+  ],
+  "notes": [
+    "Baselines (Transformer, ConvMixer) are fully reproducible from baselines.py in this repo.",
+    "The ZetaPhi mixer is a proprietary linear-scaling attention replacement; only its scores are published here, not its code or mechanism.",
+    "All compared models share an identical training recipe, data pipeline, and (within ~2%) parameter budget for a fair comparison.",
+    "Reported number is the best eval accuracy over 100 epochs; with no LR schedule, final-epoch numbers are lower due to late overfitting and are not the headline metric.",
+    "Scope: this is a matched-budget CIFAR-100 comparison at ~0.45M params. It is not a claim of universal superiority across scales or tasks."
+  ]
+}
