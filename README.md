@@ -64,6 +64,30 @@ latency from 50 to 4,096 timesteps (attention: 10x slower at 4,096, OOM at batch
 
 ---
 
+## EuRoC MAV — drone IMU odometry (NEW)
+
+200Hz raw IMU -> relative pose (position delta + rotation), cross-sequence
+split, test = MH_05_difficult, ~69k params all models, 3 seeds.
+Full report: [EuRoC_IMU_Odometry_Benchmark.md](EuRoC_IMU_Odometry_Benchmark.md).
+Baseline harness: [`euroc_imu/`](euroc_imu/). Per-seed numbers in
+[`euroc_imu/results/`](euroc_imu/results/).
+
+| Window | best baseline rot (deg) | ZetaPhi rot (deg) | ZetaPhi b1 latency |
+|---|---|---|---|
+| 1s (200 steps) | 0.684 ± 0.039 (Transformer) | **0.467 ± 0.025** | 0.277 ms |
+| 2s (400) | 1.226 ± 0.164 (Transformer) | **0.791 ± 0.062** | 0.293 ms |
+| 4s (800) | 2.212 ± 0.136 (Transformer) | **1.553 ± 0.107** | 0.280 ms |
+
+Rotation wins 30-35% at every window length with flat ~0.28ms batch-1
+latency (Transformer training VRAM: 4.4GB at 4s windows vs our 0.77GB).
+Honest negative, stated in the report: a GRU wins clean position RMSE at
+all lengths (our best variant comes within ~7%); sustained calibration
+faults degrade us more than baselines. Behind a standard embedded driver
+stack we are the most damage-stable model measured (packet loss ratio 1.00,
+conditioned spikes 0.98 — below clean).
+
+---
+
 ## Reproduce the baselines
 
 ```bash
