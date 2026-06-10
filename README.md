@@ -30,6 +30,40 @@ models tested.
 
 ---
 
+## UCI HAR — continuous edge kinematics
+
+50Hz 9-axis IMU streams, 6 activity classes, parameter-matched, 5 seeds.
+Full report: [Robotics_Continuous_Kinematics_Benchmark.md](Robotics_Continuous_Kinematics_Benchmark.md)
+(includes a 2026-06-09 correction: clean accuracy is a statistical tie at N=5 seeds,
+not the single-seed win previously reported).
+
+| Model | Params | Clean acc (N=5) | Voltage-spike acc | Streaming VRAM |
+|---|---:|---:|---:|---:|
+| Transformer | 611,462 | 90.45 ± 0.60 | 16.2% | grows with context (OOM @ 32k steps) |
+| **ZetaPhi mixer (ours)** | **542,246** | 90.32 ± 0.67 | **76.0%** | **< 5 MB, flat** |
+
+The honest headline is not accuracy (tie) — it is fault robustness and O(1) memory.
+
+---
+
+## NASA C-MAPSS — long-history predictive maintenance
+
+Turbofan RUL prediction, ~70k params all models, validation-only selection, 3 seeds.
+Full report: [CMAPSS_Predictive_Maintenance_Benchmark.md](CMAPSS_Predictive_Maintenance_Benchmark.md).
+Baseline harness: [`cmapss_rul/`](cmapss_rul/).
+
+| History | GRU | TCN (causal) | Transformer | ZetaPhi (ours) |
+|---|---|---|---|---|
+| 30 cycles | **13.00** | 14.47 | 13.51 | 21.84 |
+| 50 | 14.42 | 14.84 | **13.58** | 16.09 |
+| 200 | 67.48 | 41.49 | 69.45 | **32.30** |
+
+Test RMSE, lower is better. We lose short-history clean accuracy and say so; we are the
+only architecture still standing at 200-cycle histories, with flat 0.26 ms batch-1
+latency from 50 to 4,096 timesteps (attention: 10x slower at 4,096, OOM at batch scale).
+
+---
+
 ## Reproduce the baselines
 
 ```bash
